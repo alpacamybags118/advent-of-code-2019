@@ -21,15 +21,10 @@ function ReduceSum(init) {
 
 const input = ReadInput(inputPath).split('\n').map(x => Number(x));
 
-const result = input.reduce(function(result, item, index) {
-    //how can i include the 1st value more cleanly in a reduce?
-    if(index == 1) {
-        result = ReduceSum((Math.floor(result / 3) - 2));
-    }
-    
+const result = input.reduce(function(result, item) {
     result += ReduceSum((Math.floor(item / 3) - 2));
     
     return result
-});
+}, 0);
 
 console.log(result)

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const inputPath = "./input";
 
+//make importable
 function ReadInput(path) {
     return fs.readFileSync(path, {encoding: "utf-8"});
 }

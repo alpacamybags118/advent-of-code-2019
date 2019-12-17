@@ -5,6 +5,20 @@ function ReadInput(path) {
     return fs.readFileSync(path, {encoding: "utf-8"});
 }
 
+function RunCommand(array, index) {
+    codes = array[index].split(Math.floor(array[index].length / 2));
+
+    switch(codes[1]) {
+        case 1: return AddFunction(array, index, mode); ;
+        case 2: return MultiplyFunction(array, index, mode);
+        case 3: return InputFunction(array, index, mode);
+        case 4: return OutputFunction(array, index);
+        default: return null
+    }
+}
+
+//refactor so i can run compute against a single command - for output function
+//strip loop to be outside of this
 function Compute(array, verb, noun) {
     array[1] = noun;
     array[2] = verb;

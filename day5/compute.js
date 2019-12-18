@@ -19,35 +19,71 @@ function RunCommand(array, index) {
 
 //refactor so i can run compute against a single command - for output function
 //strip loop to be outside of this
-function Compute(array, verb, noun) {
-    array[1] = noun;
-    array[2] = verb;
+function Compute(array) {
     let index = 0;
     let cont = array[index] != 99;
 
     while(cont) {
-        codes = array[index].split(Math.floor(array[index].length / 2));
-        switch(codes[1]) {
-            case 1: array = AddFunction(array, index, mode); break;
-            case 2: array = MultiplyFunction(array, index, mode); break;
-            case 3: array = InputFunction(array, index, mode); break;
-            case 4: OutputFunction(array, index); break;
+        command = String(array[index]);
+        //console.log(command);
+        if(command.length > 1) {
+            op = command.substr(command.length - 2, command.length - 1);
+            params = command.substr(0, (command.length - 2));
+            //console.log(op);
+            //console.log(params);
+        }
+        else {
+            switch(command) {
+                case '1':
+                case '2':
+                    op = command
+                    params = '000';
+                    break;
+                case '3':
+                case '4':
+                    op = command;
+                    params = '0';
+                    break;
+                default:
+                    op = command;
+                    params =  '';
+                    break;
+            }
+        }
+        switch(op) {
+            case '1':
+            case '01': array = AddFunction(array, index, params); break;
+            case '2':
+            case '02': array = MultiplyFunction(array, index, params); break;
+            case '3': array = InputFunction(array, index); break;
+            case '04':
+            case '4': OutputFunction(array, index, params); break;
             default: cont=false;
         }
 
-        index += array[codes[1].length + codes[2].length];
+        //console.log(op.length)
+        if(op == '1' || op =='01' || op == '2' || op == '02') {
+            index += 4
+        }
+        else {
+            index += 2
+        }
+
+        //console.log(index);
         if(cont) {
-            cont = array[index] != 99;
+            cont = op != '99'
         }
     }
-
+    //console.log(array[index]);
     return array[0];
 }
 
 function AddFunction(array, pos, mode) {
-    const num1 = mode[mode.length - 1] == 0 ? Number(array[array[pos + 1]]) : Number(array[pos+1])
+    const num1 = mode[mode.length - 1] == 0 ? Number(array[array[pos + 1]]) : Number(array[pos+1]);
     const num2 = mode[mode.length - 2] == 0 ? Number(array[array[pos + 2]]) : Number(array[pos+2])
     mode[mode.length - 3] == 0 ? array[array[pos+3]] = num1 + num2 : array[pos+3] = num1 + num2
+
+    //console.log(num1, num2);
 
     return array
 }
@@ -56,33 +92,22 @@ function MultiplyFunction(array, pos, mode) {
     const num1 = mode[mode.length - 1] == 0 ? Number(array[array[pos + 1]]) : Number(array[pos+1])
     const num2 = mode[mode.length - 2] == 0 ? Number(array[array[pos + 2]]) : Number(array[pos+2])
     mode[mode.length - 3] == 0 ? array[array[pos+3]] = num1 * num2 : array[pos+3] = num1 * num2
-
     return array
 }
 
-function InputFunction(array, pos, mode) {
-    //need to look ahead for input
-    input
-}
+//assumed value is 1
+function GetInputValue(){return 1};
 
-function OutputFunction(array, pos) {return array[pos];}
+function InputFunction(array, pos) {array[array[pos + 1]] = GetInputValue(); return array;}
+
+function OutputFunction(array, pos, mode) {
+    mode[0] == '0' ? console.log(array[array[pos]]) : console.log(array[pos]);
+}
 
 const input = ReadInput(inputPath).split(',').map(x => Number(x))
-let val = 0
-let noun = 12; //increases final by a significant amount
-let verb = 2; //increases final by 1
-let iterations = 0;
-const final = 19690720
 
-while(final > val) {
-    val = Compute(input.slice(), verb, ++noun);
-    iterations+=1;
-}
-noun--;
-while(final != val) {
-    val =  Compute(input.slice(), ++verb, noun);
-    iterations+=1;
-}
+array = Compute(input);
 
-console.log("Total iterations - " + iterations)
-console.log("Final answer - " + (100 * noun + verb))
+//console.log(array)
+
+//console.log("Final answer - " + array[0]);

@@ -1,32 +1,59 @@
 const fs = require('fs');
 const inputPath = "./input";
 
+//need to make a tree and insert node algorithm
+class TreeNode {
+    constructor(value) {
+      this.value = value;
+      this.descendents = [];
+    }
+
+    insert(node) {
+
+    }
+  }
+
+function FindNextInput(list, input) {
+    return list.find(element=>{return element.split(')')[0] == input});
+}
+
 function FindOrbits(input) {
     let map = new Map();
-    input.forEach(element => {
-       const values = element.split(')');
-       if(map.has(values[0])) {
-           //console.log(map.get(values[0]))
-           let val = [map.get(values[0]),values[0]]
-           //console.log(val);
-           val = val.reduce((acc,val) => acc.concat(val),[]);
-            map.set(values[1], val);
-            //console.log(map.get(values[0]))
-       }
-       else {
-        map.set(values[1],values[0]);
-       }
-    });
+    let count = input.length;
+    let val;
+
+    for(i = 0; i < count; i++) {
+
+        if(i == 0) {
+            val = FindNextInput(input,'COM');
+        }
+        else {
+            if(!val) {
+                val = input[i];
+            }
+            console.log(val)
+            let search = val.split(')')[1];
+            //console.log(search);
+            val = FindNextInput(input,search);
+        }
+
+        if(!val) {
+            continue
+        }
+        let check = val.split(')');
+        
+    };
 
     let iterator = map.keys();
-    let val = iterator.next().value;
+    let x = iterator.next().value;
     let orbits = 0
 
-    while(val) {
-        console.log(`key - ${val}`);
-        console.log(`val - ${map.get(val)}`)
-        orbits += map.get(val).length
-        val = iterator.next().value;
+    while(x) {
+        console.log(`key - ${x}`);
+        console.log(`val - ${map.get(x)}`)
+        console.log(`orbits - ${map.get(x).length}`)
+        orbits += map.get(x).length
+        x = iterator.next().value;
     }
 
     console.log(orbits);
@@ -36,6 +63,7 @@ function ReadInput(path) {
     return fs.readFileSync(path, {encoding: "utf-8"});
 }
 
-const input = ReadInput(inputPath).split('\n')
+//either write a better sort of make a graph
+const input = ReadInput(inputPath).split('\n');
 
 const result = FindOrbits(input);

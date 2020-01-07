@@ -1,66 +1,38 @@
 const fs = require('fs');
 const inputPath = "./input";
 
-//need to make a tree and insert node algorithm
-class TreeNode {
-    constructor(value) {
-      this.value = value;
-      this.descendents = [];
+function ReadInput(path) {
+    return fs.readFileSync(path, {encoding: "utf-8"});
+}
+
+function CalculateOrbits(input, graph) {
+    if(!graph.has(input)) {
+        return 0;
     }
-
-    insert(node) {
-
+    else if(graph.get(input) == 'SAN') {
+        return 0;
     }
-  }
-
-function FindNextInput(list, input) {
-    return list.find(element=>{return element.split(')')[0] == input});
+    else {
+        return 1 + CalculateOrbits(graph.get(input), graph);
+    }
 }
 
 function FindOrbits(input) {
-    let map = new Map();
-    let count = input.length;
-    let val;
-
-    for(i = 0; i < count; i++) {
-
-        if(i == 0) {
-            val = FindNextInput(input,'COM');
+    let graph = new Map();
+    let you;
+    input.forEach(element => {
+        let x = element.split(')');
+        if(x[1] == 'YOU') {
+            you = x[0];
         }
-        else {
-            if(!val) {
-                val = input[i];
-            }
-            console.log(val)
-            let search = val.split(')')[1];
-            //console.log(search);
-            val = FindNextInput(input,search);
-        }
+        graph.set(x[1], x[0]);
+    })
 
-        if(!val) {
-            continue
-        }
-        let check = val.split(')');
-        
-    };
+    console.log(graph);
 
-    let iterator = map.keys();
-    let x = iterator.next().value;
-    let orbits = 0
+    const dist = CalculateOrbits(graph.get(you),graph);
 
-    while(x) {
-        console.log(`key - ${x}`);
-        console.log(`val - ${map.get(x)}`)
-        console.log(`orbits - ${map.get(x).length}`)
-        orbits += map.get(x).length
-        x = iterator.next().value;
-    }
-
-    console.log(orbits);
-}
-
-function ReadInput(path) {
-    return fs.readFileSync(path, {encoding: "utf-8"});
+    console.log(dist);
 }
 
 //either write a better sort of make a graph
